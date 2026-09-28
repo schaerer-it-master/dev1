@@ -1,0 +1,243 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-ink: #0a0a0a;
+  --color-ink-2: #121110;
+  --color-ink-3: #1b1917;
+  --color-gold: #c9a87c;
+  --color-gold-soft: #e4ceaa;
+  --color-gold-deep: #8d7150;
+  --color-bone: #ede6da;
+  --color-mist: #8b857b;
+
+  --font-display: var(--font-bodoni), 'Bodoni Moda', 'Didot', serif;
+  --font-sans: var(--font-hanken), 'Helvetica Neue', system-ui, sans-serif;
+  --font-mono: var(--font-dm-mono), ui-monospace, 'SFMono-Regular', monospace;
+
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-quart: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+@layer base {
+  html {
+    background: var(--color-ink);
+    color: var(--color-bone);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--color-ink);
+    font-family: var(--font-sans);
+    overflow-x: clip;
+  }
+  ::selection {
+    background: var(--color-gold);
+    color: var(--color-ink);
+  }
+  html.is-loading,
+  html.is-loading body {
+    overflow: hidden;
+  }
+  button {
+    cursor: pointer;
+  }
+  @media (pointer: fine) {
+    html.has-cursor,
+    html.has-cursor * {
+      cursor: none !important;
+    }
+  }
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+.lenis [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+@layer components {
+  .label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+  }
+  .display {
+    font-family: var(--font-display);
+    /* a slightly lower optical size keeps the hairlines alive on 1x screens */
+    font-variation-settings: 'opsz' 42;
+    letter-spacing: -0.02em;
+    line-height: 0.88;
+  }
+  .gold-fill {
+    background: linear-gradient(180deg, #f6e7c9 0%, #d8b98c 38%, #c9a87c 55%, #7c5f3d 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .text-outline {
+    color: transparent;
+    -webkit-text-stroke: 1px rgb(201 168 124 / 0.45);
+  }
+  .text-outline-bone {
+    color: transparent;
+    -webkit-text-stroke: 1px rgb(237 230 218 / 0.18);
+  }
+  .gold-gradient {
+    background: linear-gradient(100deg, #8d7150 0%, #e4ceaa 30%, #c9a87c 48%, #fff3dc 55%, #c9a87c 64%, #8d7150 100%);
+    background-size: 220% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: sheen 9s var(--ease-quart) infinite;
+  }
+  .hairline {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgb(201 168 124 / 0.5), transparent);
+  }
+  /* SplitText helpers */
+  .split-mask {
+    overflow: clip;
+    padding-bottom: 0.08em;
+    margin-bottom: -0.08em;
+  }
+  .char,
+  .word {
+    display: inline-block;
+    will-change: transform, opacity;
+  }
+}
+
+@keyframes sheen {
+  0%,
+  100% {
+    background-position: 100% 0;
+  }
+  50% {
+    background-position: 0% 0;
+  }
+}
+
+/* Film grain + vignette */
+.grain {
+  position: fixed;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  z-index: 90;
+  opacity: 0.085;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 0.9s steps(6) infinite;
+  mix-blend-mode: overlay;
+}
+.vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 89;
+  background:
+    radial-gradient(120% 90% at 50% 45%, transparent 55%, rgb(0 0 0 / 0.55) 100%),
+    linear-gradient(180deg, rgb(0 0 0 / 0.25), transparent 14%, transparent 86%, rgb(0 0 0 / 0.3));
+}
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  17% { transform: translate(-4%, -6%); }
+  34% { transform: translate(6%, 2%); }
+  51% { transform: translate(-2%, 7%); }
+  68% { transform: translate(5%, -3%); }
+  85% { transform: translate(-6%, 4%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* Magnetic button fill */
+.magnetic-fill {
+  position: absolute;
+  left: var(--mx, 50%);
+  top: var(--my, 50%);
+  width: 250%;
+  aspect-ratio: 1;
+  border-radius: 9999px;
+  background: var(--color-gold);
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.7s var(--ease-expo);
+  pointer-events: none;
+}
+.magnetic:hover .magnetic-fill,
+.magnetic:focus-visible .magnetic-fill {
+  transform: translate(-50%, -50%) scale(1);
+}
+.magnetic:hover .magnetic-label,
+.magnetic:focus-visible .magnetic-label {
+  color: var(--color-ink);
+}
+
+/* Aurora window gradient used in the story section */
+.sky-window {
+  background:
+    radial-gradient(60% 50% at 20% 30%, rgb(125 255 196 / 0.35), transparent 70%),
+    radial-gradient(50% 60% at 80% 70%, rgb(255 138 61 / 0.35), transparent 70%),
+    radial-gradient(40% 40% at 60% 20%, rgb(233 236 255 / 0.18), transparent 70%),
+    conic-gradient(from 200deg at 50% 60%, #120d09, #2b1b10, #0c1614, #1c0907, #120d09);
+  background-size: 140% 140%;
+  animation: drift 18s ease-in-out infinite alternate;
+}
+@keyframes drift {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
+}
+
+@keyframes scrollcue {
+  0% { transform: scaleY(0); transform-origin: top; }
+  45% { transform: scaleY(1); transform-origin: top; }
+  55% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+.scroll-cue-line {
+  animation: scrollcue 2.4s var(--ease-quart) infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.6); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain { animation: none; }
+  .gold-gradient { animation: none; }
+  .sky-window { animation: none; }
+}
+
+/* Note motifs */
+.motif-spin {
+  animation: motif-spin 60s linear infinite;
+}
+.motif-spin-slow {
+  animation: motif-spin 120s linear infinite reverse;
+}
+.motif-sway {
+  animation: motif-sway 5s ease-in-out infinite alternate;
+}
+.note-card:hover .motif-spin {
+  animation-duration: 12s;
+}
+@keyframes motif-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes motif-sway {
+  from {
+    transform: rotate(-3deg);
+  }
+  to {
+    transform: rotate(3deg);
+  }
+}

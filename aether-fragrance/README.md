@@ -22,6 +22,11 @@ STATIC_EXPORT=1 npx next build   # → ./out
 
 Append `?instant` to the URL to disable all damping and the preloader delay (used for automated screenshots).
 
+## Deploy to Netlify
+
+- **Drag & drop:** run `npm run export`, then drop the `out` folder (or a ZIP of its contents) onto https://app.netlify.com/drop.
+- **From Git:** connect the repository, set *Base directory* to `aether-fragrance`. Build command and publish folder come from `netlify.toml` (`npm run export` → `out`).
+
 ## Stack
 
 Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · GSAP + ScrollTrigger + SplitText · Lenis ·
